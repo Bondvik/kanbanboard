@@ -37,3 +37,12 @@ export const render = (container, element, place) => {
             break;
     }
 };
+
+export const remove = (component) => {
+    if (component === null) {
+        return;
+    }
+
+    component.getElement().remove();
+    component.removeElement();
+};

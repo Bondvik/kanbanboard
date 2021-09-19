@@ -1,3 +1,5 @@
+import {nanoid} from "nanoid";
+
 export const STATE_EMPTY = `empty`;
 
 export const Status = {
@@ -24,3 +26,27 @@ export const RenderPosition = {
     AFTERBEGIN: 'afterbegin',
     BEFOREEND: 'beforeend',
 };
+
+export const UserAction = {
+    UPDATE_TASK: 'UPDATE_TASK',
+    ADD_TASK: 'ADD_TASK',
+    DELETE_TASK: 'DELETE_TASK',
+    DRAGGED_TASK: 'DRAGGED_TASK'
+};
+
+export const UpdateType = {
+    PATCH: 'PATCH',
+    MINOR: 'MINOR',
+};
+
+export const Mode = {
+    DEFAULT: 'DEFAULT',
+    EDITING: 'EDITING',
+    ADD: 'ADD'
+}
+
+export const DEFAULT_TASK = {
+    id: nanoid(),
+    title: '',
+    status: 'backlog'
+}
