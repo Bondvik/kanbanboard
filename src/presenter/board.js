@@ -62,7 +62,6 @@ export default class Board {
         // В зависимости от типа изменений решаем, что делать:
         switch (updateType) {
             case UpdateType.MINOR:
-                this._tasks = this._tasksModel.getTasks().slice();
                 this._clearTaskList();
                 this._renderTasks();
                 break;
@@ -78,6 +77,7 @@ export default class Board {
 
     _renderTasks() {
         // Метод для рендеринга задач
+        this._tasks = this._tasksModel.getTasks().slice();
         this._taskBoardGroupElements = document.querySelectorAll('.taskboard__group');
         for (let i = 0; i < this._taskBoardGroupElements.length; i++) {
             for (let k = 0; k < this._tasks.length; k++) {
