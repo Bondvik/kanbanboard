@@ -49,12 +49,12 @@ export const remove = (component) => {
 };
 
 export const renderDraggedElement = (container, element, referenceElement) => {
-    // if (container instanceof Abstract) {
-    //     container = container.getElement();
-    // }
-    //
-    // if (element instanceof Abstract) {
-    //     element = element.getElement();
-    // }
+    if (container instanceof Abstract) {
+        container = container.getElement();
+    }
+
+    if (element instanceof Abstract) {
+        element = element.getElement();
+    }
     container.insertBefore(element, referenceElement);
 }

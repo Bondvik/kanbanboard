@@ -7,6 +7,7 @@ export default class ListPresenter {
         this._boardComponent = boardComponent;
         this._tasksModel = tasksModel;
         this._listComponent = null;
+        this._taskBoardListContainer = null;
 
         this._handleListDragover = this._handleListDragover.bind(this);
     }
@@ -15,10 +16,10 @@ export default class ListPresenter {
         this._listComponent = new TaskBoardGroupView(status);
         this._listComponent.setListDragoverHandler(this._handleListDragover);
         render(this._boardComponent, this._listComponent.getElement(), RenderPosition.BEFOREEND);
+        this._taskBoardListContainer = this._listComponent.getElement().querySelector('.taskboard__list');
     }
 
     _handleListDragover(evt) {
-        const taskBoardListContainer = this._listComponent.getElement().querySelector('.taskboard__list');
         //перетаскиваемый элемент
         const draggedElement = this._tasksModel.getDraggedElement();
 
@@ -42,14 +43,17 @@ export default class ListPresenter {
         draggedElement.classList.add(newTaskStatus);
         draggedElement.dataset.status = this._listComponent.getElement().dataset.status;
 
+        if (this._taskBoardListContainer.querySelector('.button--clear')) {
+            this._taskBoardListContainer.querySelector('.button--clear').remove();
+        }
+
         if (droppedItem.classList.contains('task')) {
-            renderDraggedElement(taskBoardListContainer, draggedElement, referenceElement);
+            renderDraggedElement(this._taskBoardListContainer, draggedElement, referenceElement);
         }
 
         //если в родительском листе нет ни одного целевого элемента (droppedItem)
-        if (taskBoardListContainer.children.length === 0) {
-            render(taskBoardListContainer, draggedElement, RenderPosition.BEFOREEND);
+        if (this._taskBoardListContainer.children.length === 0) {
+            render(this._taskBoardListContainer, draggedElement, RenderPosition.BEFOREEND);
         }
     }
-
 }

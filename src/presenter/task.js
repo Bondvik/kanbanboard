@@ -40,6 +40,9 @@ export default class TaskPresenter {
         this._taskComponent.setTaskDragstartHandler(this._handleTaskDragstart);
         this._taskComponent.setTaskDragendHandler(this._handleTaskDragend);
         this._taskComponent.getElement().classList.add(`task--${task.status}`);
+        if (this._taskBoardGroup.querySelector('.task--empty')) {
+            this._taskBoardGroup.querySelector('.task--empty').remove();
+        }
         render(this._taskBoardGroup, this._taskComponent.getElement(), RenderPosition.BEFOREEND);
     }
 

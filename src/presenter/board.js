@@ -4,6 +4,8 @@ import FormView from "../view/form";
 import {DEFAULT_TASK, RenderPosition, Status, UpdateType, UserAction} from "../constants";
 import TaskPresenter from "./task";
 import ListPresenter from "./list";
+import TaskEmptyView from "../view/task-empty";
+import BasketClearView from "../view/basket-clear";
 
 export default class Board {
     constructor(boardContainer, tasksModel) {
@@ -34,6 +36,8 @@ export default class Board {
 
         this._renderTaskList();
         this._renderBoard();
+        this._renderNoTasks();
+        this._renderButtonBasket();
 
         this._taskNewPresenter = new TaskPresenter(this._taskBoardGroupElements[0], this._handleViewAction);
     }
@@ -68,6 +72,8 @@ export default class Board {
             case UpdateType.MINOR:
                 this._clearTaskList();
                 this._renderTasks();
+                this._renderNoTasks();
+                this._renderButtonBasket();
                 break;
         }
     }
@@ -98,6 +104,29 @@ export default class Board {
         taskPresenter.init(task);
         //чтобы сохранить задачи и в последующем идентифицировать конкретную задачу
         this._taskPresenter[task.id] = taskPresenter;
+    }
+
+    _renderNoTasks() {
+        const boardListElements = document.querySelectorAll('.taskboard__list');
+        boardListElements.forEach((listElement) => {
+            if (listElement.children.length !== 0) {
+                return
+            }
+            render(listElement, new TaskEmptyView().getElement(), RenderPosition.BEFOREEND);
+        })
+    }
+
+    _renderButtonBasket() {
+        const basketBoardContainer = document.querySelector(`.taskboard__group--basket`);
+        const tasksInBasket = this._tasks.filter((task) => task.status === Status.BASKET);
+
+        if (basketBoardContainer.querySelector('.button--clear')) {
+            basketBoardContainer.querySelector('.button--clear').remove();
+        }
+
+        if (tasksInBasket.length !== 0) {
+            render(basketBoardContainer, new BasketClearView().getElement(), RenderPosition.BEFOREEND);
+        }
     }
 
     _renderBoard() {
