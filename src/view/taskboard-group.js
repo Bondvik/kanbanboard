@@ -6,6 +6,8 @@ export default class TaskBoardGroupView extends Abstract {
         super();
         this._element = null;
         this._status = status;
+
+        this._listDragoverHandler = this._listDragoverHandler.bind(this);
     }
 
     getTemplate() {
@@ -15,5 +17,15 @@ export default class TaskBoardGroupView extends Abstract {
                 <div class="taskboard__list"></div>
             </article>`
         )
+    }
+
+    _listDragoverHandler(evt) {
+        evt.preventDefault();
+        this._callback.listDragover(evt);
+    }
+
+    setListDragoverHandler(callback) {
+        this._callback.listDragover = callback;
+        this.getElement().addEventListener('dragover', this._listDragoverHandler);
     }
 }

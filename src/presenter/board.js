@@ -1,9 +1,9 @@
 import TaskBoardView from "../view/task-board";
 import {render} from "../utils";
 import FormView from "../view/form";
-import {DEFAULT_TASK, Mode, RenderPosition, Status, UpdateType, UserAction} from "../constants";
-import TaskBoardGroupView from "../view/taskboard-group";
+import {DEFAULT_TASK, RenderPosition, Status, UpdateType, UserAction} from "../constants";
 import TaskPresenter from "./task";
+import ListPresenter from "./list";
 
 export default class Board {
     constructor(boardContainer, tasksModel) {
@@ -12,6 +12,7 @@ export default class Board {
 
         this._boardComponent = new TaskBoardView();
         this._formComponent = new FormView();
+        this._listComponent = null;
 
         this._taskBoardGroupElements = null;
         this._taskNewPresenter = null;
@@ -31,7 +32,7 @@ export default class Board {
         render(this._boardContainer, this._boardComponent.getElement(), RenderPosition.BEFOREEND);
         render(this._boardContainer, this._formComponent.getElement(), RenderPosition.AFTERBEGIN);
 
-        this._renderTaskBoardGroup();
+        this._renderTaskList();
         this._renderBoard();
 
         this._taskNewPresenter = new TaskPresenter(this._taskBoardGroupElements[0], this._handleViewAction);
@@ -42,7 +43,7 @@ export default class Board {
     }
 
     _handleViewAction(actionType, updateType, update) {
-        // console.log(actionType, updateType, update);
+        console.log(actionType, updateType, update);
         // Здесь будем вызывать обновление модели.
         // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
         // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -50,6 +51,9 @@ export default class Board {
         switch (actionType) {
             case UserAction.ADD_TASK:
                 this._tasksModel.addTask(updateType, update);
+                break;
+            case UserAction.DRAGGED_TASK:
+                this._tasksModel.updatePosition(updateType, update, update.prevTaskId);
                 break;
         }
     }
@@ -68,15 +72,15 @@ export default class Board {
         }
     }
 
-    _renderTaskBoardGroup() {
+    _renderTaskList() {
         const taskBoardElement = document.querySelector('.taskboard');
         Object.values(Status).forEach((status) => {
-            render(taskBoardElement, new TaskBoardGroupView(status).getElement(), RenderPosition.BEFOREEND);
-        });
+            this._listComponent = new ListPresenter(taskBoardElement, this._tasksModel);
+            this._listComponent.init(status);
+        })
     }
 
     _renderTasks() {
-        // Метод для рендеринга задач
         this._tasks = this._tasksModel.getTasks().slice();
         this._taskBoardGroupElements = document.querySelectorAll('.taskboard__group');
         for (let i = 0; i < this._taskBoardGroupElements.length; i++) {
@@ -90,7 +94,7 @@ export default class Board {
     }
 
     _renderTask(taskBoardGroup, task) {
-        const taskPresenter = new TaskPresenter(taskBoardGroup, this._handleViewAction);
+        const taskPresenter = new TaskPresenter(taskBoardGroup, this._handleViewAction, this._tasksModel);
         taskPresenter.init(task);
         //чтобы сохранить задачи и в последующем идентифицировать конкретную задачу
         this._taskPresenter[task.id] = taskPresenter;

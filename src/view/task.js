@@ -5,6 +5,9 @@ export default class TaskView extends Abstract {
         super();
         this._task = task;
         this._element = null;
+
+        this._taskDragstartHandler = this._taskDragstartHandler.bind(this);
+        this._taskDragendHandler = this._taskDragendHandler.bind(this);
     }
 
     getTemplate() {
@@ -19,4 +22,23 @@ export default class TaskView extends Abstract {
             </div>`
         )
     }
+
+    _taskDragendHandler(evt) {
+        this._callback.taskDragend(evt);
+    }
+
+    _taskDragstartHandler() {
+        this._callback.taskDragstart();
+    }
+
+    setTaskDragendHandler(callback) {
+        this._callback.taskDragend = callback;
+        this.getElement().addEventListener('dragend', this._taskDragendHandler);
+    }
+
+    setTaskDragstartHandler(callback) {
+        this._callback.taskDragstart = callback;
+        this.getElement().addEventListener('dragstart', this._taskDragstartHandler);
+    }
+
 }

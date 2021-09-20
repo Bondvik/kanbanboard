@@ -1,5 +1,6 @@
 //Источник: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 import {RenderPosition} from "./constants";
+import Abstract from "./view/abstract";
 
 export const getRandomNumber = function(min, max) {
     let minValue =  Math.ceil(min);
@@ -46,3 +47,14 @@ export const remove = (component) => {
     component.getElement().remove();
     component.removeElement();
 };
+
+export const renderDraggedElement = (container, element, referenceElement) => {
+    // if (container instanceof Abstract) {
+    //     container = container.getElement();
+    // }
+    //
+    // if (element instanceof Abstract) {
+    //     element = element.getElement();
+    // }
+    container.insertBefore(element, referenceElement);
+}
