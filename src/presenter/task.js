@@ -5,10 +5,11 @@ import {nanoid} from "nanoid";
 import TaskEditView from "../view/task-edit";
 
 export default class TaskPresenter {
-    constructor(taskBoardGroup, handleViewAction, tasksModel) {
+    constructor(taskBoardGroup, handleViewAction, tasksModel, handleModeChange) {
         this._taskBoardGroup = taskBoardGroup;
         this._handleViewAction = handleViewAction;
         this._tasksModel = tasksModel;
+        this._handleModeChange = handleModeChange;
 
         this._mode = Mode.DEFAULT;
 
@@ -26,6 +27,7 @@ export default class TaskPresenter {
 
     init(task) {
         if (task.id === DEFAULT_TASK.id) {
+
             const titleElement = document.querySelector('#add-task');
             if (titleElement.value.trim() === '') {
                 return
@@ -39,11 +41,15 @@ export default class TaskPresenter {
                 UpdateType.MINOR,
                 this._task
             );
+
             titleElement.value = '';
             titleElement.focus();
             return;
         }
         this._task = task;
+        const prevTaskComponent = this._taskComponent;
+        const prevTaskEditComponent = this._taskEditComponent;
+
         this._taskComponent = new TaskView(this._task);
         this._taskEditComponent = new TaskEditView(this._task);
 
@@ -53,26 +59,49 @@ export default class TaskPresenter {
         this._taskEditComponent.setInputHandler(this._handleInput);
 
         this._taskComponent.getElement().classList.add(`task--${task.status}`);
+
         if (this._taskBoardGroup.querySelector('.task--empty')) {
             this._taskBoardGroup.querySelector('.task--empty').remove();
         }
-        render(this._taskBoardGroup, this._taskComponent.getElement(), RenderPosition.BEFOREEND);
+
+        if (prevTaskComponent === null || prevTaskEditComponent === null) {
+            render(this._taskBoardGroup,  this._taskComponent.getElement(), RenderPosition.BEFOREEND);
+            return;
+        }
+        if (this._taskBoardGroup.contains(prevTaskComponent.getElement())) {
+            replace(this._taskComponent, prevTaskComponent);
+        }
+
+        if (this._taskBoardGroup.contains(prevTaskEditComponent.getElement())) {
+            replace(this._taskEditComponent, prevTaskEditComponent);
+        }
+
+        remove(prevTaskComponent);
+        remove(prevTaskEditComponent);
     }
 
     destroy() {
         remove(this._taskComponent);
     }
 
+    resetView() {
+        if (this._mode !== Mode.DEFAULT) {
+            this._replaceFormToCard();
+        }
+    }
+
     _replaceCardToForm() {
-        this._mode = Mode.EDITING;
         replace(this._taskEditComponent, this._taskComponent);
+        document.addEventListener('keydown', this._escKeyDownHandler);
+        this._handleModeChange();
+        this._mode = Mode.EDITING;
     }
 
     _replaceFormToCard() {
-        this._mode = Mode.DEFAULT;
         replace(this._taskComponent, this._taskEditComponent);
+        document.removeEventListener('keydown', this._escKeyDownHandler);
+        this._mode = Mode.DEFAULT;
     }
-
 
     _handleTaskDragstart() {
         this._taskComponent.getElement().setAttribute('draggable', true);
@@ -113,13 +142,20 @@ export default class TaskPresenter {
             evt.preventDefault();
             this._taskEditComponent.getElement().classList.remove('task--active');
             this._replaceFormToCard();
-            this._handleViewAction(
-                UserAction.UPDATE_TASK,
-                UpdateType.MINOR,
-                Object.assign({}, this._task, {
-                    title: this._updateTask
-                })
-            )
+            if (!this._updateTask) {
+                this._handleViewAction(
+                    UserAction.UPDATE_TASK,
+                    UpdateType.MINOR,
+                    Object.assign({}, this._task));
+            } else {
+                this._handleViewAction(
+                    UserAction.UPDATE_TASK,
+                    UpdateType.MINOR,
+                    Object.assign({}, this._task, {
+                        title: this._updateTask
+                    })
+                )
+            }
             document.removeEventListener('keydown', this._escKeyDownHandler);
         }
     }

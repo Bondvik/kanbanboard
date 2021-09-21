@@ -25,6 +25,7 @@ export default class Board {
         this._handleViewAction = this._handleViewAction.bind(this);
         this._handleModelTask = this._handleModelTask.bind(this);
         this._handleClickDelete = this._handleClickDelete.bind(this);
+        this._handleModeChange = this._handleModeChange.bind(this);
 
     }
 
@@ -49,8 +50,13 @@ export default class Board {
         this._taskNewPresenter.init(DEFAULT_TASK);
     }
 
+    _handleModeChange() {
+        Object
+            .values(this._taskPresenter)
+            .forEach((presenter) => presenter.resetView());
+    }
+
     _handleViewAction(actionType, updateType, update) {
-        //console.log(actionType, updateType, update);
         // Здесь будем вызывать обновление модели.
         // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
         // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -71,8 +77,7 @@ export default class Board {
         }
     }
 
-    _handleModelTask(updateType, data) {
-        console.log(updateType, data);
+    _handleModelTask(updateType) {
         // В зависимости от типа изменений решаем, что делать:
         // - обновить часть списка (например, когда поменялось описание)
         // - обновить список (например, когда задача ушла в архив)
@@ -122,7 +127,7 @@ export default class Board {
     }
 
     _renderTask(taskBoardGroup, task) {
-        const taskPresenter = new TaskPresenter(taskBoardGroup, this._handleViewAction, this._tasksModel);
+        const taskPresenter = new TaskPresenter(taskBoardGroup, this._handleViewAction, this._tasksModel, this._handleModeChange);
         taskPresenter.init(task);
         //чтобы сохранить задачи и в последующем идентифицировать конкретную задачу
         this._taskPresenter[task.id] = taskPresenter;

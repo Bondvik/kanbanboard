@@ -24,5 +24,6 @@ boardPresenter.init();
 const formElement = document.querySelector('form');
 formElement.addEventListener('submit', (evt) => {
     evt.preventDefault();
+    boardPresenter._handleModeChange();
     boardPresenter.createTask();
 });
