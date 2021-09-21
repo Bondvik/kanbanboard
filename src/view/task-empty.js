@@ -1,5 +1,5 @@
-import Abstract from "./abstract";
 import {STATE_EMPTY, Text} from "../constants";
+import Abstract from "./abstract";
 
 export default class TaskEmptyView extends Abstract {
     getTemplate() {

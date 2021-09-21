@@ -50,7 +50,7 @@ export default class Board {
     }
 
     _handleViewAction(actionType, updateType, update) {
-        console.log(actionType, updateType, update);
+        //console.log(actionType, updateType, update);
         // Здесь будем вызывать обновление модели.
         // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
         // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -58,6 +58,9 @@ export default class Board {
         switch (actionType) {
             case UserAction.ADD_TASK:
                 this._tasksModel.addTask(updateType, update);
+                break;
+            case UserAction.UPDATE_TASK:
+                this._tasksModel.updateTask(updateType, update);
                 break;
             case UserAction.DELETE_TASKS:
                 this._tasksModel.deleteTasks(updateType, update);
@@ -69,7 +72,7 @@ export default class Board {
     }
 
     _handleModelTask(updateType, data) {
-        // console.log(updateType, data);
+        console.log(updateType, data);
         // В зависимости от типа изменений решаем, что делать:
         // - обновить часть списка (например, когда поменялось описание)
         // - обновить список (например, когда задача ушла в архив)

@@ -8,6 +8,7 @@ export default class TaskView extends Abstract {
 
         this._taskDragstartHandler = this._taskDragstartHandler.bind(this);
         this._taskDragendHandler = this._taskDragendHandler.bind(this);
+        this._editClickHandler = this._editClickHandler.bind(this);
     }
 
     getTemplate() {
@@ -21,6 +22,11 @@ export default class TaskView extends Abstract {
                 <button class="task__edit" type="button" aria-label="Изменить"></button>
             </div>`
         )
+    }
+
+    _editClickHandler(evt) {
+        evt.preventDefault();
+        this._callback.editClick();
     }
 
     _taskDragendHandler(evt) {
@@ -39,6 +45,11 @@ export default class TaskView extends Abstract {
     setTaskDragstartHandler(callback) {
         this._callback.taskDragstart = callback;
         this.getElement().addEventListener('dragstart', this._taskDragstartHandler);
+    }
+
+    setEditClickHandler(callback) {
+        this._callback.editClick = callback;
+        this.getElement().querySelector('.task__edit').addEventListener('click', this._editClickHandler);
     }
 
 }

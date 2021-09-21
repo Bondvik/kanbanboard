@@ -1,7 +1,8 @@
 import TaskView from "../view/task";
-import {remove, render} from "../utils";
+import {remove, render, replace} from "../utils";
 import {RenderPosition, UpdateType, UserAction, Mode, DEFAULT_TASK} from "../constants";
 import {nanoid} from "nanoid";
+import TaskEditView from "../view/task-edit";
 
 export default class TaskPresenter {
     constructor(taskBoardGroup, handleViewAction, tasksModel) {
@@ -9,11 +10,18 @@ export default class TaskPresenter {
         this._handleViewAction = handleViewAction;
         this._tasksModel = tasksModel;
 
+        this._mode = Mode.DEFAULT;
+
         this._task = null;
+        this._updateTask = null;
         this._taskComponent = null;
+        this._taskEditComponent = null;
 
         this._handleTaskDragstart = this._handleTaskDragstart.bind(this);
         this._handleTaskDragend = this._handleTaskDragend.bind(this);
+        this._handleButtonClick = this._handleButtonClick.bind(this);
+        this._handleInput = this._handleInput.bind(this);
+        this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     }
 
     init(task) {
@@ -37,8 +45,13 @@ export default class TaskPresenter {
         }
         this._task = task;
         this._taskComponent = new TaskView(this._task);
+        this._taskEditComponent = new TaskEditView(this._task);
+
         this._taskComponent.setTaskDragstartHandler(this._handleTaskDragstart);
         this._taskComponent.setTaskDragendHandler(this._handleTaskDragend);
+        this._taskComponent.setEditClickHandler(this._handleButtonClick);
+        this._taskEditComponent.setInputHandler(this._handleInput);
+
         this._taskComponent.getElement().classList.add(`task--${task.status}`);
         if (this._taskBoardGroup.querySelector('.task--empty')) {
             this._taskBoardGroup.querySelector('.task--empty').remove();
@@ -49,6 +62,17 @@ export default class TaskPresenter {
     destroy() {
         remove(this._taskComponent);
     }
+
+    _replaceCardToForm() {
+        this._mode = Mode.EDITING;
+        replace(this._taskEditComponent, this._taskComponent);
+    }
+
+    _replaceFormToCard() {
+        this._mode = Mode.DEFAULT;
+        replace(this._taskComponent, this._taskEditComponent);
+    }
+
 
     _handleTaskDragstart() {
         this._taskComponent.getElement().setAttribute('draggable', true);
@@ -73,5 +97,41 @@ export default class TaskPresenter {
         this._tasksModel.setDraggedElement(null);
         draggedElement.classList.remove('task--dragged');
         delete this._task.prevTaskId;
+    }
+
+    _escKeyDownHandler(evt) {
+        if (['Escape', 'Esc'].includes(evt.key)) {
+            evt.preventDefault();
+            this._replaceFormToCard();
+            this._handleViewAction(
+                UserAction.UPDATE_TASK,
+                UpdateType.MINOR,
+                Object.assign({}, this._task));
+            document.removeEventListener('keydown', this._escKeyDownHandler);
+        }
+        if (['Enter'].includes(evt.key)) {
+            evt.preventDefault();
+            this._taskEditComponent.getElement().classList.remove('task--active');
+            this._replaceFormToCard();
+            this._handleViewAction(
+                UserAction.UPDATE_TASK,
+                UpdateType.MINOR,
+                Object.assign({}, this._task, {
+                    title: this._updateTask
+                })
+            )
+            document.removeEventListener('keydown', this._escKeyDownHandler);
+        }
+    }
+
+    _handleButtonClick() {
+        this._taskEditComponent.getElement().classList.add('task--active');
+        this._replaceCardToForm();
+        document.addEventListener('keydown', this._escKeyDownHandler);
+    }
+
+    _handleInput(task) {
+        this._updateTask = task;
+        document.addEventListener('keydown', this._escKeyDownHandler);
     }
 }
