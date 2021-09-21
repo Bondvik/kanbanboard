@@ -1,6 +1,11 @@
 import Abstract from "./abstract";
 
 export default class BasketClearView extends Abstract {
+    constructor() {
+        super();
+        this._basketClickHandler = this._basketClickHandler.bind(this);
+    }
+
     getTemplate() {
         return (
             `<button class="taskboard__button button button--clear" type="button">
@@ -11,5 +16,14 @@ export default class BasketClearView extends Abstract {
                 <span>Очистить</span>
             </button>`
         )
+    }
+
+    _basketClickHandler() {
+        this._callback.basketClick();
+    }
+
+    setCleanBasketHandler(callback) {
+        this._callback.basketClick = callback;
+        this.getElement().addEventListener('click', this._basketClickHandler);
     }
 }

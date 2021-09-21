@@ -30,7 +30,7 @@ export const RenderPosition = {
 export const UserAction = {
     UPDATE_TASK: 'UPDATE_TASK',
     ADD_TASK: 'ADD_TASK',
-    DELETE_TASK: 'DELETE_TASK',
+    DELETE_TASKS: 'DELETE_TASK',
     DRAGGED_TASK: 'DRAGGED_TASK'
 };
 

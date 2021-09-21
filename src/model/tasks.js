@@ -24,6 +24,12 @@ export default class TasksModel extends Observer {
         this._notify(updateType, update);
     }
 
+    deleteTasks(updatedType, ids) {
+        this._tasks = this._tasks.filter((task) => !ids.includes(task.id));
+
+        this._notify(updatedType);
+    }
+
     updatePosition(updateType, update, prevTaskId) {
         const taskIndex = this._getTaskIndexByID(update.id);
 

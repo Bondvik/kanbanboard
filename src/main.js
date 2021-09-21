@@ -5,7 +5,7 @@ import TasksModel from "./model/tasks";
 import HeaderView from "./view/header";
 import Board from "./presenter/board";
 
-const TASK_COUNT = 3;
+const TASK_COUNT = 10;
 
 const tasks = new Array(TASK_COUNT).fill().map(createTask);
 const tasksModel = new TasksModel();

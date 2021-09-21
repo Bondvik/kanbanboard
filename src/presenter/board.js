@@ -14,6 +14,7 @@ export default class Board {
 
         this._boardComponent = new TaskBoardView();
         this._formComponent = new FormView();
+        this._basketClearView = new BasketClearView();
         this._listComponent = null;
 
         this._taskBoardGroupElements = null;
@@ -23,11 +24,13 @@ export default class Board {
 
         this._handleViewAction = this._handleViewAction.bind(this);
         this._handleModelTask = this._handleModelTask.bind(this);
+        this._handleClickDelete = this._handleClickDelete.bind(this);
 
     }
 
     init() {
         this._tasks = this._tasksModel.getTasks().slice();
+        this._basketClearView.setCleanBasketHandler(this._handleClickDelete);
 
         this._tasksModel.addObserver(this._handleModelTask);
 
@@ -56,6 +59,9 @@ export default class Board {
             case UserAction.ADD_TASK:
                 this._tasksModel.addTask(updateType, update);
                 break;
+            case UserAction.DELETE_TASKS:
+                this._tasksModel.deleteTasks(updateType, update);
+                break;
             case UserAction.DRAGGED_TASK:
                 this._tasksModel.updatePosition(updateType, update, update.prevTaskId);
                 break;
@@ -76,6 +82,19 @@ export default class Board {
                 this._renderButtonBasket();
                 break;
         }
+    }
+
+    _handleClickDelete() {
+        const taskBoardGroupBasket = document.querySelector('.taskboard__group--basket .taskboard__list');
+        let ids = [];
+        for (const task of taskBoardGroupBasket.children) {
+            ids.push(task.dataset.id);
+        }
+        this._handleViewAction (
+            UserAction.DELETE_TASKS,
+            UpdateType.MINOR,
+            ids
+        );
     }
 
     _renderTaskList() {
@@ -125,7 +144,7 @@ export default class Board {
         }
 
         if (tasksInBasket.length !== 0) {
-            render(basketBoardContainer, new BasketClearView().getElement(), RenderPosition.BEFOREEND);
+            render(basketBoardContainer, this._basketClearView.getElement(), RenderPosition.BEFOREEND);
         }
     }
 
