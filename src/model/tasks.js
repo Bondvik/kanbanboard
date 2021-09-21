@@ -17,8 +17,8 @@ export default class TasksModel extends Observer {
 
     addTask(updateType, update) {
         this._tasks = [
-            update,
             ...this._tasks,
+            update
         ];
 
         this._notify(updateType, update);

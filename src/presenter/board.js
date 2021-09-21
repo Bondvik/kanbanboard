@@ -1,7 +1,7 @@
 import TaskBoardView from "../view/task-board";
 import {render} from "../utils";
 import FormView from "../view/form";
-import {DEFAULT_TASK, RenderPosition, Status, UpdateType, UserAction} from "../constants";
+import {DEFAULT_TASK, RenderPosition, Status, Text, UpdateType, UserAction} from "../constants";
 import TaskPresenter from "./task";
 import ListPresenter from "./list";
 import TaskEmptyView from "../view/task-empty";
@@ -139,21 +139,21 @@ export default class Board {
             if (listElement.children.length !== 0) {
                 return
             }
-            render(listElement, new TaskEmptyView().getElement(), RenderPosition.BEFOREEND);
+            (listElement.parentElement.dataset.status === 'basket') ?
+                render(listElement, new TaskEmptyView(Text.EMPTY_BASKET).getElement(), RenderPosition.BEFOREEND) :
+                render(listElement, new TaskEmptyView().getElement(), RenderPosition.BEFOREEND);
         })
     }
 
     _renderButtonBasket() {
         const basketBoardContainer = document.querySelector(`.taskboard__group--basket`);
+        render(basketBoardContainer, this._basketClearView.getElement(), RenderPosition.BEFOREEND);
+        const basketElement = basketBoardContainer.querySelector('.button--clear');
+
         const tasksInBasket = this._tasks.filter((task) => task.status === Status.BASKET);
 
-        if (basketBoardContainer.querySelector('.button--clear')) {
-            basketBoardContainer.querySelector('.button--clear').remove();
-        }
+        (tasksInBasket.length !== 0) ?  basketElement.disabled = false : basketElement.disabled = true;
 
-        if (tasksInBasket.length !== 0) {
-            render(basketBoardContainer, this._basketClearView.getElement(), RenderPosition.BEFOREEND);
-        }
     }
 
     _renderBoard() {
