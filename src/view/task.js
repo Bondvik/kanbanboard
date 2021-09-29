@@ -14,7 +14,7 @@ export default class TaskView extends Abstract {
     getTemplate() {
         const {id, title, status} = this._task;
         return (
-            `<div class="taskboard__item task" data-id="${id}" data-status="${status}">
+            `<div class="taskboard__item task" data-id="${id}" data-status="${status}" draggable="true">
                 <div class="task__body">
                     <p class="task__view">${title}</p>
                     <input class="task__input" type="text" value="${title}">

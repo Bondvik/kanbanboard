@@ -104,7 +104,6 @@ export default class TaskPresenter {
     }
 
     _handleTaskDragstart() {
-        this._taskComponent.getElement().setAttribute('draggable', true);
         this._taskComponent.getElement().classList.add('task--dragged');
         const draggedElement = this._taskComponent.getElement();
         this._tasksModel.setDraggedElement(draggedElement);
