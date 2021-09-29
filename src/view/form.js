@@ -10,10 +10,11 @@ export default class FormView extends Abstract {
         return (
             `<section class="add-task">
                 <h2 class="visually-hidden">Добавить задачу</h2>
-                <form class="add-task__form" aria-label="Форма добавления задачи">
+                <form class="add-task__form" aria-label="Форма добавления задачи" autocomplete="off">
                   <div class="add-task__input-wrapper">
                       <label for="add-task">${Text.NEW_TASK}</label>
-                        <input 
+                        <input
+                            autocomplete="off" 
                             type="text" 
                             name="task-name" 
                             id="add-task" placeholder="Название задачи..." required>
